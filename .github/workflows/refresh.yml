@@ -1,0 +1,20 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 0 1 * *'
+
+jobs:
+  refresh_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Install dependency
+        run: pip install scrapy
+      - name: Refresh
+        run: python -m scrapy runspider -O output.csv ./spider.py
+      - uses: seanmiddleditch/gha-publish-to-git@master
+        with:
+          branch: main
+          commit_message: 'Auto refresh data'
+          github_token: '${{ secrets.GH_TOKEN  }}'
